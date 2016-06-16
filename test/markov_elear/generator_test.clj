@@ -41,6 +41,11 @@
       (with-redefs [shuffle (fn [c] c)]
         (let [prefix ["And" "the"]]
           (is (= ["And" "the" "Pobble" "who"]
-                 (walk-chain prefix chain prefix))))))))
-
-
+                 (walk-chain prefix chain prefix))))))
+    (testing "repeating chains"
+      (with-redefs [shuffle (fn [c] (reverse c))]
+        (let [prefix ["And" "the"]]
+          (is (> 140 ;; 140 is the character limit for Tweets!
+                 (count (apply str (walk-chain prefix chain prefix)))))
+          (is (= ["And" "the" "Golden" "Grouse" "And" "the" "Golden" "Grouse"]
+                 (take 8 (walk-chain prefix chain prefix)))))))))
