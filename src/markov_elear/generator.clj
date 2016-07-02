@@ -1,4 +1,6 @@
-(ns markov-elear.generator)
+(ns markov-elear.generator
+  (:require [clojure.string :as s]
+            [clojure.java.io :as io]))
 
 (defn chain-entry [words]
   (let [[a b c] words]
@@ -38,3 +40,12 @@
         (if (>= new-result-char-count 140) ;; 140 is the character limit for Tweets!
           result
           (recur new-prefix chain (conj result suffix)))))))
+
+(defn generate-text [start-phrase word-chain]
+  (let [prefix (s/split start-phrase #" ")
+        result-chain (walk-chain prefix word-chain prefix)
+        result-text (word-chain->text result-chain)]
+    result-text))
+
+(defn file->word-chain [path]
+  (text->word-chain (slurp (io/resource path))))
