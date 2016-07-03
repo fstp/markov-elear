@@ -49,3 +49,20 @@
 
 (defn file->word-chain [path]
   (text->word-chain (slurp (io/resource path))))
+
+(def files ["nonsense.txt" "monad.txt" "clojure.txt"
+            "functional_programming.txt" "nonsense2.txt" "nonsense3.txt"])
+
+(def functional (apply merge-with clojure.set/union (map file->word-chain files)))
+
+(def prefix-list ["On the" "They went" "And all" "We think"
+                  "For every" "No other" "To a" "And every"
+                  "We, too," "For his" "And the" "But the"
+                  "Are the" "The Pobble" "For the" "When we"
+                  "In the" "Yet we" "With only" "Are the"
+                  "Though the"  "And when"
+                  "We sit" "And this" "No other" "With a"
+                  "And at" "What a" "Of the"
+                  "O please" "So that" "And all" "When they"
+                  "But before" "Whoso had" "And nobody" "And it's"
+                  "For any" "For example," "Also in" "In contrast"])
