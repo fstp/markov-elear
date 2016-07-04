@@ -50,19 +50,39 @@
 (defn file->word-chain [path]
   (text->word-chain (slurp (io/resource path))))
 
-(def files ["nonsense.txt" "monad.txt" "clojure.txt"
-            "functional_programming.txt" "nonsense2.txt" "nonsense3.txt"])
+(def files ["poem.txt" "monad.txt" "clojure.txt" "intro.txt" "unix.txt"
+            "functional_programming.txt" "edward_lear.txt" "computer_science.txt"])
 
 (def functional (apply merge-with clojure.set/union (map file->word-chain files)))
 
-(def prefix-list ["On the" "They went" "And all" "We think"
-                  "For every" "No other" "To a" "And every"
-                  "We, too," "For his" "And the" "But the"
-                  "Are the" "The Pobble" "For the" "When we"
-                  "In the" "Yet we" "With only" "Are the"
-                  "Though the"  "And when"
-                  "We sit" "And this" "No other" "With a"
-                  "And at" "What a" "Of the"
+(def prefix-list ["On the" "They went" "And all" "For every"
+                  "To a" "And every" "For his" "And the"
+                  "But the" "Are the" "The Pobble" "For the"
+                  "When we" "In the" "Yet we" "With only"
+                  "Are the" "Though the" "And when" "And this"
+                  "With a" "And at" "What a" "Of the"
                   "O please" "So that" "And all" "When they"
-                  "But before" "Whoso had" "And nobody" "And it's"
-                  "For any" "For example," "Also in" "In contrast"])
+                  "And nobody" "And it's" "For example" "Also in"
+                  "In contrast" "The history" "The examples" "Can you"
+                  "I am" "Where did" "The theory" "I expected him"
+                  "Lets take" "It was" "This is" "You are"
+                  "What are"])
+
+(defn end-at-last-punctuation [text]
+  (let [trimmed-to-last-punct (apply str (re-seq #"[\s\w]+[^.!?,]*[.!?,]" text))
+        trimmed-to-last-word (apply str (re-seq #".*[^a-zA-Z]+" text))
+        result-text (if (empty? trimmed-to-last-punct)
+                      trimmed-to-last-word
+                      trimmed-to-last-punct)
+        cleaned-text (s/replace result-text #"[,| ]$" ".")]
+    (s/replace cleaned-text #"\"" "'")))
+
+(defn empty-sentence? [sentence]
+  (<= (count (s/split sentence #" ")) 2))
+
+(defn tweet-text [chain]
+  (let [text (generate-text (-> prefix-list shuffle first) chain)]
+    (end-at-last-punctuation text)))
+
+(defn functional-tweet-text []
+  (first (drop-while empty-sentence? (repeatedly #(tweet-text functional)))))

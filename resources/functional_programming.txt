@@ -7,3 +7,75 @@ In contrast, imperative programming changes state with commands in the source la
 Functional programming languages, especially purely functional ones such as Hope, have largely been emphasized in academia rather than in commercial software development. However, prominent programming languages which support functional programming such as Common Lisp, Scheme, Clojure, Wolfram Language (also known as Mathematica), Racket, Erlang, OCaml, Haskell, and F# have been used in industrial and commercial applications by a wide variety of organizations. Functional programming is also supported in some domain-specific programming languages like R (statistics), J, K and Q from Kx Systems (financial analysis), XQuery/XSLT (XML), and Opal. Widespread domain-specific declarative languages like SQL and Lex/Yacc use some elements of functional programming, especially in eschewing mutable values.
 
 Programming in a functional style can also be accomplished in languages that are not specifically designed for functional programming. For example, the imperative Perl programming language has been the subject of a book describing how to apply functional programming concepts. This is also true of the PHP programming language. C++11, Java 8, and C# 3.0 all added constructs to facilitate the functional style. The Julia language also offers functional programming abilities. An interesting case is that of Scala – it is frequently written in a functional style, but the presence of side effects and mutable state place it in a grey area between imperative and functional languages.
+
+Many functional programming articles teach abstract functional techniques. That is, composition, pipelining, higher order functions. This one is different. It shows examples of imperative, unfunctional code that people write every day and translates these examples to a functional style.
+
+The first section of the article takes short, data transforming loops and translates them into functional maps and reduces. The second section takes longer loops, breaks them up into units and makes each unit functional. The third section takes a loop that is a long series of successive data transformations and decomposes it into a functional pipeline.
+
+The examples are in Python, because many people find Python easy to read. A number of the examples eschew pythonicity in order to demonstrate functional techniques common to many languages: map, reduce, pipeline. All of the examples are in Python 2.
+
+When people talk about functional programming, they mention a dizzying number of “functional” characteristics. They mention immutable data1, first class functions and tail call optimisation. These are language features that aid functional programming. They mention mapping, reducing, pipelining, recursing, currying and the use of higher order functions. These are programming techniques used to write functional code. They mention parallelization, lazy evaluation and determinism. These are advantageous properties of functional programs.
+
+Ignore all that. Functional code is characterised by one thing: the absence of side effects. It doesn’t rely on data outside the current function, and it doesn’t change data that exists outside the current function. Every other “functional” thing can be derived from this property. Use it as a guide rope as you learn.
+How does this code come up with its initial a? The starting point for the number of incidences of 'Sam' cannot be 'Mary read a story to Sam and Isla.' The initial accumulator is specified with the third argument to reduce(). This allows the use of a value of a different type from the items in the collection.
+
+Why are map and reduce better?
+
+First, they are often one-liners.
+
+Second, the important parts of the iteration - the collection, the operation and the return value - are always in the same places in every map and reduce.
+
+Third, the code in a loop may affect variables defined before it or code that runs after it. By convention, maps and reduces are functional.
+
+Fourth, map and reduce are elemental operations. Every time a person reads a for loop, they have to work through the logic line by line. There are few structural regularities they can use to create a scaffolding on which to hang their understanding of the code. In contrast, map and reduce are at once building blocks that can be combined into complex algorithms, and elements that the code reader can instantly understand and abstract in their mind. “Ah, this code is transforming each item in this collection. It’s throwing some of the transformations away. It’s combining the remainder into a single output.”
+
+Fifth, map and reduce have many friends that provide useful, tweaked versions of their basic behaviour. For example: filter, all, any and find.
+Notice that it has no variables. Indeed, it has nothing more than three functions and one constant. Try writing the squares of integers in Java without using a variable. Oh, there’s probably a way to do it, but it certainly isn’t natural, and it wouldn’t read as nicely as my program above.
+
+More importantly, if you could peer into the computer’s memory and look at the memory locations used by my program, you’d find that those locations would be initialized as the program first used them, but then they would retain their values, unchanged, throughout the rest of the execution of the program. In other words, no new values would be assigned to those locations.
+
+Indeed, this is a necessary condition for Referential Transparency, which depends on the fact that every time you invoke a particular function call, you will get the same result. The fact that computer memory for my program does not change while my program is executing means that the call (f 1) will always return the same value no matter how many times it is called. And that means I can replace (f 1), wherever it appears, with its value.
+
+Or to say this another way: Referential Transparency means that no function can have a side effect. And, of course, that means that no variable, once initialized, can ever change its value, since assignment is the quintessential side effect.
+
+So why is this important? What’s so great about Referential Transparency? Given that it is possible to write programs without assignment, why is it important?
+
+You are almost certainly reading this on the screen of your computer. Or if not, you have a computer nearby. How many cores does it have?
+
+I’m typing this article on a MacBook Pro with 4 real cores. (They say it has 8, but I don’t count all that “hyperthreading” nonsense. It has four.) My previous laptop had two cores. And the one before that had just one. The only conclusion I can draw is that my next laptop will truly have eight cores; and the one after that will likely have 16.
+
+The poor hardware engineers, who have carried us on their backs for the last four decades, have finally hit the speed of light limit. Computer clocks simply aren’t going to get much faster. After doubling every 18 months for longer than most programmers (except me) have lived, the runaway growth in computer speed has slammed to a halt, never to rise again.
+
+So those hardware engineers, in an effort to give us more and more cycles per second, have resorted to adding more processors into our chips, and there seems no end to how many processors that will lead to as the years march onwards.
+
+So let me ask you this, O skilled and competent programmer: How are you going to take advantage of every computer cycle available to you when your computer has 4096 cores in it? How will you marshal your function executions when they must run within 16384 processors all contending for the same memory buss? How will you build responsive and flexible websites when your models, views, and controllers must share 65536 processors?
+
+Honestly, we programmers can barely get two Java threads to cooperate. And threads are baby-food compared to the meat and potatoes of real processors fighting over the buss. For over half a century programmers have made the observation that the processes running in a computer are concurrent, not simultaneous.
+
+Well, boys and girls, welcome to the wonderful world of simultaneity! Now, how are you going to deal with it?
+
+And the answer to that is, simply, “Abandon all assignment, ye who enter here.”
+
+Clearly, if the value of a memory location, once initialized, does not change during the course of a program execution, then there’s nothing for the 131072 processors to compete over. You don’t need semaphores if you don’t have side effects! You can’t have concurrent update (pardon me: Simultaneous Update) problems if you don’t update!
+The first thing to understand about functional programming is that in a completely pure functional programming language, there is no way you can modify external state.
+
+That means you can't print to the screen (that's changing the state of the screen), access the web (changing socket state), or anything particularly useful.
+
+
+But, this wouldn't be terribly useful since you wouldn't be able to get any output shown, so, it would be practically useless (people get around this by writing languages that printing every calculation to the screen as a part of the language implementation, but, this just creates more confusion).
+
+However, that's not to say that they aren't used. An example of an ancient and hugely successful purely functional programming language is mathematics (there's no "print" command in math).
+
+So, languages like Haskell use this special idea (borrowed from mathematics, see my abstract algebra posts) called a Monad to "mark" special functions that do modify state so that they can be separated cleanly from the rest of the program.
+
+This nearly kills off the decoupling problem!
+
+Because there are very few non-pure functions in a typical functional piece of code, everything else IS decoupled from the environment!
+
+This is heaven when you need something debugged!
+
+And, this cleans up what functions can do and can't do; every pure function MUST return a value, so, you can expect something in return, not just a void (because that would mean its changing state, is therefore not a pure function), so, if you try to write to the database from a pure function, you can't do that, which keeps your code squeaky clean.
+
+Usually, functional languages come with malleable and nimble static typing, which means that you don't have to write out the types when you're declaring functions, but, they're there, so, when you try to pass a String to a function that wants an Integer, the compiler will tell you.
+
+All of these restrictions make it much more difficult to compile, but, once it does, it sure as heck won't crash (it might not do what you want it to, but, that's what unit tests are for).
