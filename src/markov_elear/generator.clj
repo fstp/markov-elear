@@ -50,8 +50,10 @@
 (defn file->word-chain [path]
   (text->word-chain (slurp (io/resource path))))
 
-(def files ["poem.txt" "monad.txt" "clojure.txt" "intro.txt" "unix.txt"
-            "functional_programming.txt" "edward_lear.txt" "computer_science.txt"])
+;; (def files ["poem.txt" "monad.txt" "clojure.txt" "intro.txt" "unix.txt"
+;;             "functional_programming.txt" "edward_lear.txt" "computer_science.txt"])
+(def files ["monad.txt" "clojure.txt" "unix.txt" "edward_lear.txt"
+            "functional_programming.txt" "computer_science.txt" "egypt.txt"])
 
 (def functional (apply merge-with clojure.set/union (map file->word-chain files)))
 
@@ -66,7 +68,10 @@
                   "In contrast" "The history" "The examples" "Can you"
                   "I am" "Where did" "The theory" "I expected him"
                   "Lets take" "It was" "This is" "You are"
-                  "What are"])
+                  "What are" "Like most" "since it" "It is"
+                  "In computer" "In contrast," "Programming in" "He was"
+                  "Great and" "And that" "That very" "But with"
+                  "There was" "I had"])
 
 (defn end-at-last-punctuation [text]
   (let [trimmed-to-last-punct (apply str (re-seq #"[\s\w]+[^.!?,]*[.!?,]" text))
