@@ -51,8 +51,6 @@
 (defn file->word-chain [path]
   (text->word-chain (slurp (io/resource path))))
 
-;; (def files ["poem.txt" "monad.txt" "clojure.txt" "intro.txt" "unix.txt"
-;;             "functional_programming.txt" "edward_lear.txt" "computer_science.txt"])
 (def files ["monad.txt" "clojure.txt" "unix.txt" "edward_lear.txt"
             "functional_programming.txt" "computer_science.txt" "egypt.txt"])
 
