@@ -1,6 +1,7 @@
 (ns markov-elear.generator
   (:require [clojure.string :as s]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.set :as set]))
 
 (defn chain-entry [words]
   (let [[a b c] words]
@@ -9,7 +10,7 @@
 (defn word-chain
   [word-transitions]
   (reduce (fn [result words]
-            (merge-with clojure.set/union
+            (merge-with set/union
                         result
                         (chain-entry words)))
           {}
